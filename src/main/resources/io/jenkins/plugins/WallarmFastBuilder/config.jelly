@@ -5,10 +5,10 @@
     </f:block>
 
     <f:section title="General">
-        <f:entry title="${%Wallarm API token}" field="wallarmApiToken" description='Your Wallarm node token. Can be found at "https://us1.my.wallarm.com/nodes"'>
+        <f:entry title="${%Wallarm API token}" field="wallarmApiToken" description='Your Wallarm node token.'>
             <f:textbox />
         </f:entry>
-        <f:entry title="${%Wallarm API host}" field="wallarmApiHost" description='Wallarm API. use "us1.api.wallarm.com" for North America (default) and "api.wallarm.com" for Europe'>
+        <f:entry title="${%Wallarm API host}" field="wallarmApiHost" description='Wallarm API. Use "us1.api.wallarm.com" for North America (default) and "api.wallarm.com" for Europe'>
             <f:textbox />
         </f:entry>
         
@@ -23,11 +23,11 @@
 
     <f:radioBlock name="record" value="true" title="Record baselines" checked="false" inline="true">
         <f:nested>
-            <f:entry title="${%Fast port}" field="fastPort" description="Port for FAST docker (used in recording mode)">
+            <f:entry title="${%Fast port}" field="fastPort" description="Port for FAST docker">
                 <f:textbox />
             </f:entry>
 
-            <f:entry title="${%Inactivity timeout}" field="inactivityTimeout" description='Autoshutdown timer in seconds. Can be from 0 to 691200 (1 week). Defaults to 600 seconds (10 minutes). Used in recording mode'>
+            <f:entry title="${%Inactivity timeout}" field="inactivityTimeout" description='Autoshutdown timer in seconds. Can be from 0 to 691200 (1 week). Defaults to 600 seconds (10 minutes).'>
                 <f:textbox default="600"/>
             </f:entry>
         </f:nested>
