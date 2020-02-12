@@ -1,77 +1,81 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
-    <f:section>
+    <f:block>
         <img src="https://wallarm.com/assets/images/logo-short.svg" alt="Wallarm FAST"></img>
-    </f:section>
+    </f:block>
 
     <f:section title="General">
-        <f:entry title="${%WallarmApiToken}" field="wallarmApiToken" description='Your Wallarm node token. Can be found at "https://us1.my.wallarm.com/nodes"'>
+        <f:entry title="${%Wallarm API token}" field="wallarmApiToken" description='Your Wallarm node token.'>
             <f:textbox />
         </f:entry>
-        <f:entry title="${%WallarmApiHost}" field="wallarmApiHost" description='Wallarm API. use "us1.api.wallarm.com" for North America (default) and "api.wallarm.com" for Europe'>
+        <f:entry title="${%Wallarm API host}" field="wallarmApiHost" description='Wallarm API. Use "us1.api.wallarm.com" for North America (default) and "api.wallarm.com" for Europe'>
             <f:textbox />
         </f:entry>
         
-        <f:entry title="${%AppHost}" field="appHost" description='Address of your application (ip or name will do)'>
+        <f:entry title="${%Application host}" field="appHost" description='Address of your application (ip or name will do)'>
             <f:textbox />
         </f:entry>
-        <f:entry title="${%AppPort}" field="appPort" description='Port of your application (defaults to 8080)'>
+        <f:entry title="${%Application port}" field="appPort" description='Port of your application (defaults to 8080)'>
             <f:textbox />
         </f:entry>
 
-        <f:entry title="${%Record}" field="record" description='Record baselines for later use or run tests with recorded baselines'>
-            <f:checkbox />
-        </f:entry>
     </f:section>
 
-    <f:section title="Recording only">
-        <f:entry title="${%FastPort}" field="fastPort" description="Port for FAST docker (used in recording mode)">
-            <f:textbox />
-        </f:entry>
+    <f:radioBlock name="record" value="true" title="Record baselines" checked="false" inline="true">
+        <f:nested>
+            <f:entry title="${%Fast port}" field="fastPort" description="Port for FAST docker">
+                <f:textbox />
+            </f:entry>
 
-        <f:entry title="${%InactivityTimeout}" field="inactivityTimeout" description='Autoshutdown timer in seconds. Can be from 0 to 691200 (1 week). Defaults to 600 seconds (10 minutes). Used in recording mode'>
-            <f:textbox default="600"/>
-        </f:entry>
-    </f:section>
+            <f:entry title="${%Inactivity timeout}" field="inactivityTimeout" description='Autoshutdown timer in seconds. Can be from 0 to 691200 (1 week). Defaults to 600 seconds (10 minutes).'>
+                <f:textbox default="600"/>
+            </f:entry>
+        </f:nested>
+    </f:radioBlock>
 
-    <f:section title="Playback only">
-        <f:entry title="${%PolicyId}" field="policyId" description='Policy Id to use. Use 0 for default policy'>
-            <f:textbox />
-        </f:entry>
-        <f:entry title="${%TestRecordId}" field="testRecordId" description='Test record you wish to use. Use 0 to use the latest one available'>
-            <f:textbox />
-        </f:entry>
-        <f:entry title="${%TestRunRps}" field="testRunRps" description='Request per second limit for your test run (optional)'>
-            <f:textbox />
-        </f:entry>
-        <f:entry title="${%TestRunName}" field="testRunName" description='Name of your TestRun (optional)'>
-            <f:textbox />
-        </f:entry>
-        <f:entry title="${%TestRunDesc}" field="testRunDesc" description='TestRun description (optional)'>
-            <f:textbox />
-        </f:entry>
-        <f:entry title="${%StopOnFirstFail}" field="stopOnFirstFail" description='Stop running tests as soon as a vulnerability is found'>
-            <f:checkbox />
-        </f:entry>
-        <f:entry title="${%FailBuild}" field="failBuild" description='Fail build on completion if vulnerabilities are found'>
-            <f:checkbox />
-        </f:entry>
-    </f:section>
+    <f:radioBlock name="record" value="false" title="Playback baselines" checked="true" inline="true" >
+        <f:nested>
+            <f:entry title="${%Policy id}" field="policyId" description='Policy Id to use. Use 0 for default policy'>
+                <f:textbox />
+            </f:entry>
+            <f:entry title="${%TestRecord id}" field="testRecordId" description='Test record you wish to use. Use 0 to use the latest one available'>
+                <f:textbox />
+            </f:entry>
+            <f:entry title="${%TestRun RPS}" field="testRunRps" description='Request per second limit for your test run (optional)'>
+                <f:textbox />
+            </f:entry>
+            <f:entry title="${%TestRun name}" field="testRunName" description='Name of your TestRun (optional)'>
+                <f:textbox />
+            </f:entry>
+            <f:entry title="${%TestRun description}" field="testRunDesc" description='TestRun description (optional)'>
+                <f:textbox />
+            </f:entry>
+            <f:entry title="${%Stop on first fail}" field="stopOnFirstFail" description='Stop running tests as soon as a vulnerability is found'>
+                <f:checkbox />
+            </f:entry>
+            <f:entry title="${%Fail build}" field="failBuild" description='Fail build on completion if vulnerabilities are found'>
+                <f:checkbox />
+            </f:entry>
+            <f:entry title="${%Exclude}" field="fileExtensionsToExclude" description="FAST will skip any requests to files with the extensions specified here. Use the following format: 'js|jpeg|jpg|gif|png|css'">
+                <f:textbox default="js|jpeg|jpg|gif|png|css"/>
+            </f:entry>
+        </f:nested>
+    </f:radioBlock>
 
     <f:section title="Optional">
-        <f:entry title="${%FastName}" field="fastName" description="Name for FAST docker. Has default values for both recording and testing">
+        <f:entry title="${%Fast name}" field="fastName" description="Name for FAST docker. Has default values for both recording and testing">
             <f:textbox />
         </f:entry>
-        <f:entry title="${%WallarmVersion}" field="wallarmVersion" description='Wallarm/fast version. Leave blank for "latest"'>
+        <f:entry title="${%Wallarm version}" field="wallarmVersion" description='Wallarm/fast version. Leave blank for "latest"'>
             <f:textbox />
         </f:entry>
-        <f:entry title="${%LocalDockerNetwork}" field="localDockerNetwork" description='Adds the `--net your_network` parameter to FAST. Useful when your application runs inside of a docker container'>
+        <f:entry title="${%Local docker network}" field="localDockerNetwork" description='Adds the `--net your_network` parameter to FAST. Useful when your application runs inside of a docker container'>
             <f:textbox />
         </f:entry>
-        <f:entry title="${%LocalDockerIp}" field="localDockerIp" description="Adds the `--ip your_ip` parameter to FAST. Used when you need to address FAST while inside a docker network">
+        <f:entry title="${%Local docker ip}" field="localDockerIp" description="Adds the `--ip your_ip` parameter to FAST. Used when you need to address FAST while inside a docker network">
             <f:textbox />
         </f:entry>
-        <f:entry title="${%WithoutSudo}" field="withoutSudo" description='If checked, calls docker without sudo'>
+        <f:entry title="${%Without sudo}" field="withoutSudo" description='If checked, calls docker without sudo'>
             <f:checkbox />
         </f:entry>
     </f:section>
