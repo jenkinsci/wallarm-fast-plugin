@@ -47,6 +47,7 @@ public class WallarmFastBuilder extends Builder implements SimpleBuildStep {
     private String  localDockerNetwork;
     private String  localDockerIp;
     private String  wallarmVersion;
+    private String  fileExtensionsToExclude;
     private int     inactivityTimeout;
     private int     testRunRps;
 
@@ -69,6 +70,7 @@ public class WallarmFastBuilder extends Builder implements SimpleBuildStep {
         String  localDockerNetwork,
         String  localDockerIp,
         String  wallarmVersion,
+        String  fileExtensionsToExclude,
         int     inactivityTimeout,
         int     testRunRps) {
 
@@ -89,6 +91,7 @@ public class WallarmFastBuilder extends Builder implements SimpleBuildStep {
         this.localDockerNetwork = localDockerNetwork;
         this.localDockerIp = localDockerIp;
         this.wallarmVersion = not_empty(wallarmVersion) ? wallarmVersion : "latest";
+        this.fileExtensionsToExclude = fileExtensionsToExclude;
         this.inactivityTimeout = inactivityTimeout;
         this.testRunRps = testRunRps;
 
@@ -167,6 +170,10 @@ public class WallarmFastBuilder extends Builder implements SimpleBuildStep {
         return wallarmVersion;
     }
 
+    public String getFileExtensionsToExclude() {
+        return fileExtensionsToExclude;
+    }
+
     public int getInactivityTimeout() {
         return inactivityTimeout;
     }
@@ -228,6 +235,9 @@ public class WallarmFastBuilder extends Builder implements SimpleBuildStep {
     public void setWallarmVersion (String wallarmVersion) {
         this.wallarmVersion = wallarmVersion;
     }
+    public void setFileExtensionsToExclude (String fileExtensionsToExclude) {
+        this.fileExtensionsToExclude = fileExtensionsToExclude;
+    }
     public void setInactivityTimeout (int inactivityTimeout) {
         this.inactivityTimeout = inactivityTimeout;
     }
@@ -247,11 +257,14 @@ public class WallarmFastBuilder extends Builder implements SimpleBuildStep {
 
         add_required_params(cmd);
         add_optional_params(cmd);
-        add_params_with_default_values(cmd);
 
         if (record) {
+            add_record_params(cmd);
+            cmd.add("wallarm/fast:" + wallarmVersion ); // this must be the last parameter!
             record_baselines(cmd, run, launcher, listener);
         } else {
+            add_testing_params(cmd);
+            cmd.add("wallarm/fast:" + wallarmVersion ); // this must be the last parameter!
             run_tests(cmd, run, launcher, listener);
         }
     }
@@ -271,36 +284,33 @@ public class WallarmFastBuilder extends Builder implements SimpleBuildStep {
 
     public void add_required_params(List<String> cmd) {
         cmd.add("docker run --rm");
-        cmd.add("--name " + fastName);
-
-        if (record) {
-          cmd.add("-d");
-          cmd.add("-e CI_MODE=recording");
-          cmd.add("-p " + fastPort + ":8080");
-        } else {
-          cmd.add("-e CI_MODE=testing");
-        }
-
         cmd.add("-e WALLARM_API_TOKEN=$WALLARM_API_TOKEN");
+        cmd.add("-e WALLARM_API_HOST=" + wallarmApiHost );
+        if (not_empty(appHost)) {cmd.add("-e TEST_RUN_URI=http://" + appHost + ":" + appPort);}
     }
 
+    public void add_record_params(List<String> cmd) {
+        cmd.add("-d");
+        cmd.add("-e CI_MODE=recording");
+        cmd.add("-p " + fastPort + ":8080");
+        cmd.add("-e INACTIVITY_TIMEOUT=" + inactivityTimeout );
+    }
+
+    public void add_testing_params(List<String> cmd) {
+        cmd.add("-e CI_MODE=testing");
+        if (not_empty(policyId))                {cmd.add("-e POLICY_ID=" + policyId);}
+        if (not_empty(testRecordId))            {cmd.add("-e TEST_RECORD_ID=" + testRecordId);}
+        if (not_empty(testRunRps))              {cmd.add("-e TEST_RUN_RPS=" + testRunRps);}
+        if (not_empty(testRunName))             {cmd.add("-e TEST_RUN_NAME=" + testRunName.replace(" ", "_"));}
+        if (not_empty(testRunDesc))             {cmd.add("-e TEST_RUN_DESC=" + testRunDesc.replace(" ", "_"));}
+        if (not_empty(stopOnFirstFail))         {cmd.add("-e TEST_RUN_STOP_ON_FIRST_FAIL=" + stopOnFirstFail);}
+        if (not_empty(fileExtensionsToExclude)) {cmd.add("-e FILE_EXTENSIONS_TO_EXCLUDE=" + fileExtensionsToExclude);}
+    }
 
     public void add_optional_params(List<String> cmd) {
-        if ( not_empty(policyId) )          { cmd.add("-e POLICY_ID=" + policyId ); }
-        if ( not_empty(testRecordId) )      { cmd.add("-e TEST_RECORD_ID=" + testRecordId ); }
-        if ( not_empty(localDockerNetwork) ){ cmd.add("--net " + localDockerNetwork ); }
-        if ( not_empty(localDockerIp) )     { cmd.add("--ip " + localDockerIp ); }
-        if ( not_empty(testRunName) )       { cmd.add("-e TEST_RUN_NAME=" + testRunName.replace(" ", "_")); }
-        if ( not_empty(testRunDesc) )       { cmd.add("-e TEST_RUN_DESC=" + testRunDesc.replace(" ", "_")); }
-        if ( not_empty(stopOnFirstFail) )   { cmd.add("-e TEST_RUN_STOP_ON_FIRST_FAIL=" + stopOnFirstFail ); }
-        if ( not_empty(testRunRps) )        { cmd.add("-e TEST_RUN_RPS=" + testRunRps ); }
-        if ( not_empty(appHost) )           { cmd.add("-e TEST_RUN_URI=http://" + appHost + ":" + appPort); }
-    }
-
-    public void add_params_with_default_values(List<String> cmd) {
-        cmd.add("-e WALLARM_API_HOST=" + wallarmApiHost );
-        cmd.add("-e INACTIVITY_TIMEOUT=" + inactivityTimeout );
-        cmd.add("wallarm/fast:" + wallarmVersion ); // this must be the last parameter
+        cmd.add("--name " + fastName);
+        if (not_empty(localDockerNetwork))      {cmd.add("--net " + localDockerNetwork);}
+        if (not_empty(localDockerIp))           {cmd.add("--ip " + localDockerIp);}
     }
 
     // this one is used when we need to parse the output of the command we're launching
@@ -487,6 +497,7 @@ public class WallarmFastBuilder extends Builder implements SimpleBuildStep {
         private String  localDockerNetwork;
         private String  localDockerIp;
         private String  wallarmVersion;
+        private String  fileExtensionsToExclude;
         private int     inactivityTimeout;
         private int     testRunRps;
 
@@ -569,6 +580,10 @@ public class WallarmFastBuilder extends Builder implements SimpleBuildStep {
 
         public String getWallarmVersion() {
             return wallarmVersion;
+        }
+
+        public String getFileExtensionsToExclude() {
+            return fileExtensionsToExclude;
         }
 
         public int getInactivityTimeout() {
