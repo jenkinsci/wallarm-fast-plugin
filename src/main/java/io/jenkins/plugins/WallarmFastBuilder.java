@@ -8,6 +8,7 @@ import hudson.EnvVars;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.util.FormValidation;
+import hudson.util.Secret;
 import hudson.model.AbstractProject;
 import hudson.model.Run;
 import hudson.model.TaskListener;
@@ -30,7 +31,7 @@ import org.kohsuke.stapler.StaplerRequest;
 
 public class WallarmFastBuilder extends Builder implements SimpleBuildStep {
 
-    private String  wallarmApiToken;
+    private Secret  wallarmApiToken;
     private String  appHost;
     private String  appPort;
     private String  fastPort;
@@ -53,7 +54,7 @@ public class WallarmFastBuilder extends Builder implements SimpleBuildStep {
 
     @DataBoundConstructor
     public WallarmFastBuilder(
-        String  wallarmApiToken,
+        Secret  wallarmApiToken,
         String  appHost,
         String  appPort,
         String  fastPort,
@@ -103,7 +104,7 @@ public class WallarmFastBuilder extends Builder implements SimpleBuildStep {
     }
 
     public String getWallarmApiToken() {
-        return wallarmApiToken;
+        return wallarmApiToken.getPlainText();
     }
 
     public String getAppHost() {
@@ -185,7 +186,7 @@ public class WallarmFastBuilder extends Builder implements SimpleBuildStep {
     @DataBoundSetter
 
     public void setWallarmApiToken (String wallarmApiToken) {
-        this.wallarmApiToken = wallarmApiToken;
+        this.wallarmApiToken = Secret.fromString(wallarmApiToken);
     }
     public void setAppHost (String appHost) {
         this.appHost = appHost;
@@ -323,7 +324,7 @@ public class WallarmFastBuilder extends Builder implements SimpleBuildStep {
             cmd.add(0, "sudo");
         }
         EnvVars env = new EnvVars();
-        env.put("WALLARM_API_TOKEN", wallarmApiToken);
+        env.put("WALLARM_API_TOKEN", wallarmApiToken.getPlainText());
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         launcher.launch()
@@ -347,7 +348,7 @@ public class WallarmFastBuilder extends Builder implements SimpleBuildStep {
 
         try {
             EnvVars env = new EnvVars();
-            env.put("WALLARM_API_TOKEN", wallarmApiToken);
+            env.put("WALLARM_API_TOKEN", wallarmApiToken.getPlainText());
 
             int result = launcher.launch()
                 .cmds(String.join(" ", cmd).split(" "))
@@ -480,7 +481,7 @@ public class WallarmFastBuilder extends Builder implements SimpleBuildStep {
 
     @Extension
     public static final class DescriptorImpl extends BuildStepDescriptor<Builder> {
-        private String  wallarmApiToken;
+        private Secret  wallarmApiToken;
         private String  appHost;
         private String  appPort;
         private String  fastPort;
@@ -515,7 +516,7 @@ public class WallarmFastBuilder extends Builder implements SimpleBuildStep {
         }
 
         public String getWallarmApiToken() {
-            return wallarmApiToken;
+            return wallarmApiToken.getPlainText();
         }
 
         public String getAppHost() {
