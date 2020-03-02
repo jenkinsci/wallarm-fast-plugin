@@ -21,7 +21,7 @@
 
     </f:section>
 
-    <f:radioBlock name="record" value="true" title="Record baselines" checked="false" inline="true">
+    <f:radioBlock name="record" value="true" title="Record baselines" checked="${instance.record}" inline="true">
         <f:nested>
             <f:entry title="${%Fast port}" field="fastPort" description="Port for FAST docker">
                 <f:textbox />
@@ -33,7 +33,7 @@
         </f:nested>
     </f:radioBlock>
 
-    <f:radioBlock name="record" value="false" title="Playback baselines" checked="true" inline="true" >
+    <f:radioBlock name="record" value="false" title="Playback baselines" checked="${!instance.record}" inline="true" >
         <f:nested>
             <f:entry title="${%Policy id}" field="policyId" description='Policy Id to use. Use 0 for default policy'>
                 <f:textbox />
