@@ -333,7 +333,7 @@ public class WallarmFastBuilder extends Builder implements SimpleBuildStep {
             .stdout(out)
             .join();
 
-        return out.toString().trim();
+        return out.toString("UTF-8").trim();
      }
 
     // this one is used when we do not really care about the text result - just the launching itself
@@ -408,19 +408,12 @@ public class WallarmFastBuilder extends Builder implements SimpleBuildStep {
             }
 
             listener.getLogger().println("health check: " + health);
-            if (health == null) {
-                List<String> kill_cmd = new ArrayList<String>();
-                kill_cmd.add("docker kill");
-                kill_cmd.add(docker_id);
-                execute_cmd(launcher, listener, kill_cmd);
-                throw new AbortException("Cannot get health check results");
-            }
 
             if (health.contains("RUNNING")) { break; }
 
             Thread.sleep(10000);
 
-            if (i < 10) { continue; }
+            if (i < 9) { continue; }
 
             List<String> kill_cmd = new ArrayList<String>();
             kill_cmd.add("docker kill");
