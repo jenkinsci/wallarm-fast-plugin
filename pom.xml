@@ -9,7 +9,7 @@
     </parent>
     <groupId>io.jenkins.plugins</groupId>
     <artifactId>wallarm-fast</artifactId>
-    <version>0.1</version>
+    <version>0.1.1</version>
     <packaging>hpi</packaging>
     <properties>
         <jenkins.version>2.164.1</jenkins.version>
@@ -36,4 +36,8 @@
             <url>https://github.com/jenkinsci/wallarm-fast-plugin</url>
         </pluginRepository>
     </pluginRepositories>
+
+  <scm>
+    <tag>latest</tag>
+  </scm>
 </project>
