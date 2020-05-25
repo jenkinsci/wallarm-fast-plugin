@@ -299,8 +299,8 @@ public class WallarmFastBuilder extends Builder implements SimpleBuildStep {
 
     public void add_testing_params(List<String> cmd) {
         cmd.add("-e CI_MODE=testing");
-        if (not_empty(policyId))                {cmd.add("-e POLICY_ID=" + policyId);}
         if (not_empty(testRecordId))            {cmd.add("-e TEST_RECORD_ID=" + testRecordId);}
+        if (not_empty(policyId))                {cmd.add("-e TEST_RUN_POLICY_ID=" + policyId);}
         if (not_empty(testRunRps))              {cmd.add("-e TEST_RUN_RPS=" + testRunRps);}
         if (not_empty(testRunName))             {cmd.add("-e TEST_RUN_NAME=" + testRunName.replace(" ", "_"));}
         if (not_empty(testRunDesc))             {cmd.add("-e TEST_RUN_DESC=" + testRunDesc.replace(" ", "_"));}
