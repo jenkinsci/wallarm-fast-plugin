@@ -33,8 +33,8 @@ You may reuse the same Test Record multiple times with different Policies (you n
 
 To build the plugin locally run the following code:
 ```
-git clone https://gl.wallarm.com/wallarm-cloud/libs/FastJavaJenkinsPlugin
-cd FastJavaJenkinsPlugin
+git clone https://github.com/jenkinsci/wallarm-fast-plugin
+cd FastJenkinsPlugin
 mvn package
 ```
 
