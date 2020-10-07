@@ -305,13 +305,18 @@ public class WallarmFastBuilder extends Builder implements SimpleBuildStep {
         if (not_empty(testRunName))             {cmd.add("-e TEST_RUN_NAME="               + testRunName.replace(" ", "_"));}
         if (not_empty(testRunDesc))             {cmd.add("-e TEST_RUN_DESC="               + testRunDesc.replace(" ", "_"));}
         if (not_empty(stopOnFirstFail))         {cmd.add("-e TEST_RUN_STOP_ON_FIRST_FAIL=" + stopOnFirstFail);}
-        if (not_empty(fileExtensionsToExclude)) {cmd.add("-e FILE_EXTENSIONS_TO_EXCLUDE="  + add_missing_quotes(fileExtensionsToExclude));}
+        if (not_empty(fileExtensionsToExclude)) {cmd.add("-e FILE_EXTENSIONS_TO_EXCLUDE="  + add_missing_quotes(fileExtensionsToExclude.replace("'", "\"")));}
     }
 
     public String add_missing_quotes(String str) {
-        if (!(str.startsWith("\"") && str.endsWith("\""))) {
-            str = '"' + str + '"';
+        if (!str.startsWith("\"")) {
+            str = '"' + str;
         }
+
+        if (!str.endsWith("\"")) {
+            str = str + '"';
+        }
+
         return str;
     }
 
