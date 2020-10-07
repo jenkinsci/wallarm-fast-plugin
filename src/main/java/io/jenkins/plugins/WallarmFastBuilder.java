@@ -451,7 +451,7 @@ public class WallarmFastBuilder extends Builder implements SimpleBuildStep {
                 listener,
                 cmd);
 
-            listener.getLogger().println("Test run status: " + test_run_status);
+            listener.getLogger().println("Test run finished with status: " + test_run_status);
             listener.getLogger().println("Finishing Wallarm FAST tests...");
 
             switch (test_run_status) {
@@ -460,25 +460,16 @@ public class WallarmFastBuilder extends Builder implements SimpleBuildStep {
                     break;
 
                 case (1):
-                    String securityFailureText = SecurityFailureMessage(true, test_run_status);
-                    if (failBuild) {
-                        throw new AbortException(securityFailureText);
-                    } else {
-                        listener.getLogger().println(securityFailureText);
-                    }
+                    handleCmdResult(listener, test_run_status, "Security tests failed!");
                     break;
 
                 case (2):
-                    String internalFaulureText = InternalFailureMessage(true, test_run_status);
-                    if (failBuild) {
-                        throw new AbortException(internalFaulureText);
-                    } else {
-                        listener.getLogger().println(internalFaulureText);
-                    }
+                    handleCmdResult(listener, test_run_status, "Internal error!");
                     break;
 
                 default:
-                    throw new AbortException("Unexpected error code: " + test_run_status);
+                    handleCmdResult(listener, test_run_status, "Unexpected error code!");
+                    break;
             }
         }
 
@@ -492,19 +483,11 @@ public class WallarmFastBuilder extends Builder implements SimpleBuildStep {
         }
     }
 
-    public static String SecurityFailureMessage(Boolean failBuild, int exitStatus) {
+    private void handleCmdResult(TaskListener listener, int exitStatus, String testFailedMessage) throws AbortException {
         if (failBuild) {
-            return "Security tests failed! Build set to fail. Exit code: " + exitStatus;
+            throw new AbortException(testFailedMessage + " Build set to fail. Exit code: " + exitStatus);
         } else {
-            return "Security tests failed! Build set not to fail. Exit code: " + exitStatus;
-        }
-    }
-
-    public static String InternalFailureMessage(Boolean failBuild, int exitStatus) {
-        if (failBuild) {
-            return "Internal failure! Exit code: " + exitStatus;
-        } else {
-            return "Internal failure! Build set to not fail. Exit code: " + exitStatus;
+            listener.getLogger().println(testFailedMessage + " Build set to not fail. Exit code: " + exitStatus);
         }
     }
 
