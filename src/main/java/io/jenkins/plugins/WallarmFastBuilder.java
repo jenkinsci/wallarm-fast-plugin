@@ -473,10 +473,6 @@ public class WallarmFastBuilder extends Builder implements SimpleBuildStep {
             }
         }
 
-        catch (AbortException error)
-        {
-            throw new AbortException("" + error);
-        }
         catch (java.io.IOException error)
         {
             listener.getLogger().println("Cannot get build env params: " + error);
