@@ -389,6 +389,9 @@ public class WallarmFastBuilder extends Builder implements SimpleBuildStep {
             listener.getLogger().println(docker_id);
             throw new AbortException("Cannot start FAST docker due to docker conflict");
         }
+        if (docker_id.contains("command not found")) {
+            throw new AbortException(docker_id);
+        }
 
         listener.getLogger().println("Waiting for ready status");
         List<String> cmd_for_health = new ArrayList<String>();
@@ -448,28 +451,40 @@ public class WallarmFastBuilder extends Builder implements SimpleBuildStep {
                 listener,
                 cmd);
 
-            listener.getLogger().println("Test run status: " + test_run_status);
+            listener.getLogger().println("Test run finished with status: " + test_run_status);
             listener.getLogger().println("Finishing Wallarm FAST tests...");
 
-            if (test_run_status != 0) {
-                if (failBuild) {
-                  throw new AbortException("Security tests failed! Build set to fail");
-                } else {
-                  listener.getLogger().println("Security tests failed! Build set to not fail");
-                }
-            } else {
-                listener.getLogger().println("Security tests passed!");
+            switch (test_run_status) {
+                case (0):
+                    listener.getLogger().println("Security tests passed!");
+                    break;
+
+                case (1):
+                    handleCmdResult(listener, test_run_status, "Security tests failed!");
+                    break;
+
+                case (2):
+                    handleCmdResult(listener, test_run_status, "Internal error!");
+                    break;
+
+                default:
+                    handleCmdResult(listener, test_run_status, "Unexpected error code!");
+                    break;
             }
         }
-        catch (AbortException error)
-        {
-            throw new AbortException("Security tests failed! Build set to fail");
-        }
+
         catch (java.io.IOException error)
         {
             listener.getLogger().println("Cannot get build env params: " + error);
         }
+    }
 
+    private void handleCmdResult(TaskListener listener, int exitStatus, String testFailedMessage) throws AbortException {
+        if (failBuild) {
+            throw new AbortException(testFailedMessage + " Build set to fail. Exit code: " + exitStatus);
+        } else {
+            listener.getLogger().println(testFailedMessage + " Build set to not fail. Exit code: " + exitStatus);
+        }
     }
 
     @Extension
