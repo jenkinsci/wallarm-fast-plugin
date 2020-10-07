@@ -299,13 +299,25 @@ public class WallarmFastBuilder extends Builder implements SimpleBuildStep {
 
     public void add_testing_params(List<String> cmd) {
         cmd.add("-e CI_MODE=testing");
-        if (not_empty(testRecordId))            {cmd.add("-e TEST_RECORD_ID=" + testRecordId);}
-        if (not_empty(policyId))                {cmd.add("-e TEST_RUN_POLICY_ID=" + policyId);}
-        if (not_empty(testRunRps))              {cmd.add("-e TEST_RUN_RPS=" + testRunRps);}
-        if (not_empty(testRunName))             {cmd.add("-e TEST_RUN_NAME=" + testRunName.replace(" ", "_"));}
-        if (not_empty(testRunDesc))             {cmd.add("-e TEST_RUN_DESC=" + testRunDesc.replace(" ", "_"));}
+        if (not_empty(testRecordId))            {cmd.add("-e TEST_RECORD_ID="              + testRecordId);}
+        if (not_empty(policyId))                {cmd.add("-e TEST_RUN_POLICY_ID="          + policyId);}
+        if (not_empty(testRunRps))              {cmd.add("-e TEST_RUN_RPS="                + testRunRps);}
+        if (not_empty(testRunName))             {cmd.add("-e TEST_RUN_NAME="               + testRunName.replace(" ", "_"));}
+        if (not_empty(testRunDesc))             {cmd.add("-e TEST_RUN_DESC="               + testRunDesc.replace(" ", "_"));}
         if (not_empty(stopOnFirstFail))         {cmd.add("-e TEST_RUN_STOP_ON_FIRST_FAIL=" + stopOnFirstFail);}
-        if (not_empty(fileExtensionsToExclude)) {cmd.add("-e FILE_EXTENSIONS_TO_EXCLUDE=" + fileExtensionsToExclude);}
+        if (not_empty(fileExtensionsToExclude)) {cmd.add("-e FILE_EXTENSIONS_TO_EXCLUDE="  + add_missing_quotes(fileExtensionsToExclude.replace("'", "\"")));}
+    }
+
+    public String add_missing_quotes(String str) {
+        if (!str.startsWith("\"")) {
+            str = '"' + str;
+        }
+
+        if (!str.endsWith("\"")) {
+            str = str + '"';
+        }
+
+        return str;
     }
 
     public void add_optional_params(List<String> cmd) {
