@@ -485,9 +485,14 @@ public class WallarmFastBuilder extends Builder implements SimpleBuildStep {
             }
         }
 
+        // Abort Exception is included in IOException for some reason. IOException requires a seperate error message
+        catch (AbortException error)
+        {
+            throw new AbortException("" + error);
+        }
         catch (java.io.IOException error)
         {
-            listener.getLogger().println("Cannot get build env params: " + error);
+            throw new AbortException("Cannot get build env params: " + error);
         }
     }
 
